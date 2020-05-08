@@ -63,7 +63,7 @@ sudo mkdir -p /opt
 sudo chmod 777 /opt/
 sudo chown hadoop:hadoop /opt
 cd /opt || exit
-git clone https://github.com/alanwilter/hail-on-AWS-spot-instances.git
+git clone https://github.com/phenopolis/hail-on-AWS-spot-instances.git
 cd $HAIL_HOME/src || exit
 
 # Compile Hail

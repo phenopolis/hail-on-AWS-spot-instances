@@ -7,7 +7,6 @@ export HAIL_HOME=/opt/hail-on-AWS-spot-instances
 export PYTHONPATH="/home/hadoop/hail-python.zip:$SPARK_HOME/python:${SPARK_HOME}/python/lib/py4j-src.zip"
 echo "PYTHONPATH: ${PYTHONPATH}"
 
-export PYSPARK_PYTHON=python3
 echo "PYSPARK_PYTHON: ${PYSPARK_PYTHON}"
 
 # Needed for HDFS
@@ -16,15 +15,18 @@ export PYSPARK_SUBMIT_ARGS="--conf spark.driver.extraClassPath='$JAR_PATH' --con
 echo "PYSPARK_SUBMIT_ARGS: ${PYSPARK_SUBMIT_ARGS}"
 
 # Configure Jupyter Lab
-mkdir -p $HOME/.jupyter
-cp /opt/hail-on-AWS-spot-instances/src/jupyter_notebook_config.py $HOME/.jupyter/
+mkdir -p "$HOME/.jupyter"
+cp /opt/hail-on-AWS-spot-instances/src/jupyter_notebook_config.py "$HOME/.jupyter/"
 
 mkdir -p $HAIL_HOME/notebook/
 chmod -R 777 $HAIL_HOME/notebook
-cd $HAIL_HOME/notebook/
+cd $HAIL_HOME/notebook/ || exit
 
-JUPYTERPID=`cat /tmp/jupyter_notebook.pid` # Kill an existing Jupyter Lab if any running 
-kill $JUPYTERPID
+JUPYTERPID=$(cat /tmp/jupyter_notebook.pid) # Kill an existing Jupyter Lab if any running
+if [ -n "$JUPYTERPID" ]; then
+    kill "$JUPYTERPID"
+fi
+touch /tmp/jupyter_notebook.pid
 nohup jupyter lab >/tmp/jupyter_notebook.log 2>&1 &
-echo $! > /tmp/jupyter_notebook.pid
+echo $! >/tmp/jupyter_notebook.pid
 echo "Started Jupyter Lab in the background."
